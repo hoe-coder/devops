@@ -1,0 +1,11 @@
+﻿{
+  "agentId": 2,
+  "agentName": "wifi-eduroam-studtech-32-9b-2c-b5-e5-1b",
+  "poolId": 1,
+  "poolName": "Default",
+  "serverUrl": "https://pipelinesghubeus11.actions.githubusercontent.com/8sMh2FAIoQQGUQSaGbpGTp8uZjnrK4znqZDWzJYck5eNdzlByz/",
+  "gitHubUrl": "https://github.com/hoe-coder/devops",
+  "workFolder": "./run.sh",
+  "useV2Flow": true,
+  "serverUrlV2": "https://broker.actions.githubusercontent.com/"
+}
