@@ -1,6 +1,6 @@
 FROM gradle:9.1.0-jdk21 AS build
 
-WORKDIR /app
+WORKDIR /home/svcgithub/app
 COPY . .
 
 #RUN gradle clean test --no-daemon -Dspring.profiles.active=test
