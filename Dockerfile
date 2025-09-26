@@ -8,7 +8,7 @@ RUN gradle bootJar --no-daemon -x test
 
 FROM eclipse-temurin:21-jdk
 
-WORKDIR /app
+WORKDIR /home/svcgithub/app
 COPY --from=build /home/svcgithub/app/build/libs/*.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
