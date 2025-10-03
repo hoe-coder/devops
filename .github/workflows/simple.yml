@@ -1,11 +1,11 @@
-name: CI
+name: CI + Deploy + Integration Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: self-hosted
 
     steps:
@@ -18,8 +18,37 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Build with Gradle
-        run: ./gradlew clean build
+      - name: Build with Gradle (incl. bootJar)
+        run: ./gradlew clean bootJar
 
-      - name: Build Docker image
-        run: docker build -t devops-app-team9:latest .
+      - name: Build Docker image (tag with commit SHA, plus latest)
+        run: |
+          IMAGE_TAG="devops-app-team9:${{ github.sha }}"
+          docker build -t "$IMAGE_TAG" .
+          docker tag "$IMAGE_TAG" devops-app-team9:latest
+
+      - name: Stop and remove old container (ignore errors)
+        run: |
+          docker stop devops-app-team9 || true
+          docker rm devops-app-team9 || true
+
+      - name: Run container
+        run: |
+          # Start container with restart policy and fixed name so we can stop it later
+          docker run -d --name devops-app-team9 --restart unless-stopped -p 8080:8080 devops-app-team9:latest
+
+      - name: Wait & Run integration tests
+        run: |
+          chmod +x ci/integration-test.sh
+          ./ci/integration-test.sh
+
+      - name: Tag and push to registry (only if tests passed)
+        run: |
+          REG="10.0.40.193:5000"
+          IMAGE_TAG="devops-app-team9:${{ github.sha }}"
+          REG_IMAGE="$REG/devops-app-team9:${{ github.sha }}"
+          docker tag "$IMAGE_TAG" "$REG_IMAGE"
+          docker push "$REG_IMAGE"
+          # optional: push 'latest' tag to registry as well
+          docker tag devops-app-team9:latest "$REG/devops-app-team9:latest"
+          docker push "$REG/devops-app-team9:latest"
