@@ -12,18 +12,17 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # 1. Repository vom GitHub Server auf den Build-Server ziehen
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Docker Compose Build & Run im Arbeitsverzeichnis
-      - name: Build and run Docker Compose
+      - name: Build Docker image
         run: |
           cd $GITHUB_WORKSPACE
-          docker compose up --build -d
+          docker build -t devops-app .
 
-      # 3. Optional: weitere Steps
-      - name: Post build info
+      - name: Run Docker container
         run: |
-          echo "Build complete. Running containers:"
-          docker ps -a
+          docker run -d --name devops-app -p 8080:8080 devops-app
+
+      - name: Show running containers
+        run: docker ps -a
