@@ -22,4 +22,4 @@ jobs:
         run: ./gradlew clean build
 
       - name: Build Docker image
-        run: docker build -t devops-app .
+        run: docker build -t devops-app-team9:latest .

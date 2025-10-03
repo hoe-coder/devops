@@ -1,5 +1,5 @@
 # Java Runtime als Basis nehmen
-FROM eclipse-temurin:21-jdk-jammy
+FROM eclipse-temurin:21-jre
 
 # Arbeitsverzeichnis im Container
 WORKDIR /app
