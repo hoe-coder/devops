@@ -1,13 +1,14 @@
-# Stage 1: Build
-FROM gradle:8.10.2-jdk21 AS build
-WORKDIR /app
-COPY . .
-RUN gradle clean test --no-daemon
-RUN gradle bootJar --no-daemon -x test
+# Java Runtime als Basis nehmen
+FROM eclipse-temurin:21-jdk-jammy
 
-# Stage 2: Run
-FROM eclipse-temurin:21-jdk
+# Arbeitsverzeichnis im Container
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
+
+# JAR ins Image kopieren
+COPY build/libs/devops-0.0.1-SNAPSHOT.jar app.jar
+
+# Port, auf dem die App läuft
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+
+# Startbefehl
+ENTRYPOINT ["java", "-jar", "app.jar"]

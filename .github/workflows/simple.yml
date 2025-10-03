@@ -3,26 +3,23 @@ name: CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
       - name: Build Docker image
-        run: |
-          cd $GITHUB_WORKSPACE
-          docker build -t devops-app .
-
-      - name: Run Docker container
-        run: |
-          docker run -d --name devops-app -p 8080:8080 devops-app
-
-      - name: Show running containers
-        run: docker ps -a
+        run: docker build -t devops-app .
