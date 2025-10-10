@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "4.0.0-SNAPSHOT"
+	id("org.springframework.boot") version "3.3.4"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("jacoco")
 }
@@ -17,19 +17,27 @@ java {
 
 repositories {
 	mavenCentral()
-	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	// --- Spring Boot Runtime ---
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
+	// --- Dev + DB ---
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-
 	runtimeOnly("com.h2database:h2")
 
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	// --- Testing ---
+	testImplementation("org.springframework.boot:spring-boot-starter-test") {
+		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+	}
+
+	// (optional) für explizite WebMvc / MockMvc Tests
+	testImplementation("org.springframework:spring-test")
+	testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
+
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
