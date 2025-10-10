@@ -166,15 +166,7 @@ jobs:
 
 ---
 
-### Summary
-| Lecture | Focus | Outcome |
-|----------|--------|----------|
-| 3 | Build & Dockerize | Application built as Docker image |
-| 4 | CI/CD & Integration Testing | Automated deployment and testing pipeline |
-| 5 | Code Quality & Coverage | JaCoCo + SonarQube integrated into CI pipeline |
-
----
-
+    
 ### Notes
 - `sonarsource/sonar-scanner-cli` container runs analysis against the remote SonarQube instance.
 - Token-based authentication ensures secure upload of code metrics.
