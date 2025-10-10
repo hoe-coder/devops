@@ -1,4 +1,4 @@
-name: CI + Deploy + Integration Test
+name: CI + Deploy + Integration Test + SonarQube
 
 on:
   push:
@@ -18,8 +18,21 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Build with Gradle (incl. bootJar)
-        run: ./gradlew clean bootJar
+      # Build & run tests to generate coverage reports
+      - name: Build with Gradle (incl. JaCoCo)
+        run: ./gradlew clean test jacocoTestReport bootJar
+
+      - name: Run SonarQube analysis
+        run: |
+          docker run --rm \
+            -e SONAR_HOST_URL="http://10.0.40.193:9000" \
+            -e SONAR_LOGIN="${{ secrets.SONAR_TOKEN }}" \
+            -v "$(pwd):/usr/src" \
+            sonarsource/sonar-scanner-cli \
+            -Dsonar.projectKey=Team9 \
+            -Dsonar.sources=. \
+            -Dsonar.java.binaries=build/classes/java/main \
+            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
 
       - name: Build Docker image (tag with commit SHA, plus latest)
         run: |
@@ -34,7 +47,6 @@ jobs:
 
       - name: Run container
         run: |
-          # Start container with restart policy and fixed name so we can stop it later
           docker run -d --name devops-app-team9 --restart unless-stopped -p 8080:8080 devops-app-team9:latest
 
       - name: Wait & Run integration tests
@@ -49,6 +61,5 @@ jobs:
           REG_IMAGE="$REG/devops-app-team9:${{ github.sha }}"
           docker tag "$IMAGE_TAG" "$REG_IMAGE"
           docker push "$REG_IMAGE"
-          # optional: push 'latest' tag to registry as well
           docker tag devops-app-team9:latest "$REG/devops-app-team9:latest"
           docker push "$REG/devops-app-team9:latest"
