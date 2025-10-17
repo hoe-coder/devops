@@ -1,4 +1,4 @@
-# Lecture 1 at 5th Semptember 2025
+# Lecture 1 at 5. Semptember 2025
 
 ## TODOS:
 
