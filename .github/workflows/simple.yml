@@ -1,4 +1,4 @@
-name: CI + Deploy + Integration Test + SonarQube
+name: CI + Deploy + Integration Test + SonarQube + Docs
 
 on:
   push:
@@ -9,6 +9,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      # --- Checkout & Setup ---
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -18,7 +19,7 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      # Build & run tests to generate coverage reports
+      # --- Build, Test & Coverage ---
       - name: Build with Gradle (incl. JaCoCo)
         run: ./gradlew clean test jacocoTestReport bootJar
 
@@ -27,6 +28,7 @@ jobs:
           mkdir -p src/coverage
           cp build/reports/jacoco/test/jacocoTestReport.xml src/coverage/
 
+      # --- SonarQube Analysis ---
       - name: Run SonarQube analysis
         run: |
           docker run --rm \
@@ -38,8 +40,8 @@ jobs:
             -Dsonar.sources=. \
             -Dsonar.java.binaries=. \
             -Dsonar.coverage.jacoco.xmlReportPaths=coverage/jacocoTestReport.xml
-          
 
+      # --- Build & Deploy App ---
       - name: Build Docker image (tag with commit SHA, plus latest)
         run: |
           IMAGE_TAG="devops-app-team9:${{ github.sha }}"
@@ -53,14 +55,18 @@ jobs:
 
       - name: Run container
         run: |
-          docker run -d --name devops-app-team9 --restart unless-stopped -p 8080:8080 devops-app-team9:latest
+          docker run -d --name devops-app-team9 \
+            --restart unless-stopped \
+            -p 8080:8080 devops-app-team9:latest
 
+      # --- Integration Test ---
       - name: Wait & Run integration tests
         run: |
           chmod +x ci/integration-test.sh
           ./ci/integration-test.sh
 
-      - name: Tag and push to registry (only if tests passed)
+      # --- Push App image to Registry ---
+      - name: Tag and push App image to registry
         run: |
           REG="10.0.40.193:5000"
           IMAGE_TAG="devops-app-team9:${{ github.sha }}"
@@ -69,3 +75,36 @@ jobs:
           docker push "$REG_IMAGE"
           docker tag devops-app-team9:latest "$REG/devops-app-team9:latest"
           docker push "$REG/devops-app-team9:latest"
+
+      # --- Lecture 6: Documentation Build & Container ---
+      - name: Build MkDocs HTML docs
+        run: |
+          docker run --rm -v ${{ github.workspace }}/docs:/docs squidfunk/mkdocs-material build
+
+      - name: Build Documentation Docker image
+        run: |
+          docker build -t devops-docs-team9 -f Dockerfile.docs .
+
+      - name: Stop old docs container
+        run: |
+          docker stop devops-docs-team9 || true
+          docker rm devops-docs-team9 || true
+
+      - name: Run Documentation container
+        run: |
+          docker run -d --name devops-docs-team9 \
+            --restart unless-stopped \
+            -p 8081:80 devops-docs-team9
+
+      # --- Push Docs image to Registry ---
+      - name: Tag and push Docs image to registry
+        run: |
+          REG="10.0.40.193:5000"
+          IMAGE_TAG="devops-docs-team9:${{ github.sha }}"
+          REG_IMAGE="$REG/devops-docs-team9:${{ github.sha }}"
+          docker tag "$IMAGE_TAG" "$REG_IMAGE"
+          docker push "$REG_IMAGE"
+
+          docker tag devops-docs-team9 "$REG/devops-docs-team9:latest"
+          docker push "$REG/devops-docs-team9:latest"
+

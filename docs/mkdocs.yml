@@ -1,0 +1,6 @@
+site_name: DevOps Lecture 6
+theme:
+  name: material
+nav:
+  - Home: index.md
+docs_dir: content
