@@ -77,9 +77,17 @@ jobs:
           docker push "$REG/devops-app-team9:latest"
 
       # --- Lecture 6: Documentation Build & Container ---
+      # Clean old docs output (avoid permission issues)
+      - name: Clean old docs site folder
+        run: rm -rf docs/site || true
+
+      # Build MkDocs site as current user (avoid root-owned files)
       - name: Build MkDocs HTML docs
         run: |
-          docker run --rm -v ${{ github.workspace }}/docs:/docs squidfunk/mkdocs-material build
+          docker run --rm \
+            -u $(id -u):$(id -g) \
+            -v ${{ github.workspace }}/docs:/docs \
+            squidfunk/mkdocs-material build
 
       - name: Build Documentation Docker image
         run: |
@@ -108,3 +116,7 @@ jobs:
           docker tag devops-docs-team9 "$REG/devops-docs-team9:latest"
           docker push "$REG/devops-docs-team9:latest"
 
+      # --- Cleanup ---
+      - name: Cleanup dangling images
+        if: always()
+        run: docker image prune -f
