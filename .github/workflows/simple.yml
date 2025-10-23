@@ -93,8 +93,8 @@ jobs:
           docker run --rm \
             -u "$(id -u):$(id -g)" \
             -v "${PWD}:/docs" \
+            -w /docs \
             squidfunk/mkdocs-material build -d build/site
-
 
       - name: Create the documentation container
         run: |
