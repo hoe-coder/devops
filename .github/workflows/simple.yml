@@ -110,7 +110,8 @@ jobs:
 
       - name: Test the documentation container
         run: |
-          docker run --name docintegrationtest --network host --rm -v "${PWD}/integrationtest.sh:/integrationtest.sh:ro" ellerbrock/alpine-bash-curl-ssl bash /integrationtest.sh
+          chmod +x ci/doc-integration-test.sh
+          ./ci/doc-integration-test.sh
 
       - name: Clean the documentation container in any case
         if: always()
