@@ -112,11 +112,3 @@ jobs:
         run: |
           chmod +x ci/doc-integration-test.sh
           ./ci/doc-integration-test.sh
-
-      - name: Clean the documentation container in any case
-        if: always()
-        run: |
-          docker container stop docintegrationtest || true
-          docker container rm docintegrationtest || true
-          docker container stop mydoc || true
-          docker container rm mydoc || true
