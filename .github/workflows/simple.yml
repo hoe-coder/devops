@@ -106,7 +106,7 @@ jobs:
         run: |
           docker container stop mydoc || true
           docker container rm mydoc || true
-          docker run --name mydoc -d --restart always -p 8082:80 my-documentation
+          docker run --name mydoc -d --restart always -p 8081:80 my-documentation
 
       - name: Test the documentation container
         run: |
