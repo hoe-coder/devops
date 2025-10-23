@@ -76,47 +76,38 @@ jobs:
           docker tag devops-app-team9:latest "$REG/devops-app-team9:latest"
           docker push "$REG/devops-app-team9:latest"
 
-      # --- Lecture 6: Documentation Build & Container ---
-      # Clean old docs output (avoid permission issues)
-      - name: Clean old docs site folder
-        run: rm -rf docs/site || true
-
-      # Build MkDocs site as current user (avoid root-owned files)
-      - name: Build MkDocs HTML docs
+      # --- Documentation Build & Container ---
+      - name: Set file and folder permissions to local user
         run: |
-          docker run --rm \
-            -u $(id -u):$(id -g) \
-            -v ${{ github.workspace }}/docs:/docs \
-            squidfunk/mkdocs-material build
+          echo "Setting file and folder permissions in case something with user and group root was created in a previous run."
+          echo "Using user and group $(id -u):$(id -g) for the whole folder."
+          docker run --rm -v "${PWD}":/project bash:latest chown --recursive $(id -u):$(id -g) /project
 
-      - name: Build Documentation Docker image
+      - name: Build the documentation
         run: |
-          docker build -t devops-docs-team9 -f Dockerfile.docs .
+          docker run --rm -u "$(id -u):$(id -g)" -v "${PWD}:/docs" squidfunk/mkdocs-material build -d build/site
+          ls -al
 
-      - name: Stop old docs container
+      - name: Create the documentation container
         run: |
-          docker stop devops-docs-team9 || true
-          docker rm devops-docs-team9 || true
+          docker image rm my-documentation || true
+          docker build -f Dockerfile.nginx -t my-documentation .
+          docker image ls --all
 
-      - name: Run Documentation container
+      - name: Run the documentation container
         run: |
-          docker run -d --name devops-docs-team9 \
-            --restart unless-stopped \
-            -p 8081:80 devops-docs-team9
+          docker container stop mydoc || true
+          docker container rm mydoc || true
+          docker run --name mydoc -d --restart always -p 8081:80 my-documentation
 
-      # --- Push Docs image to Registry ---
-      - name: Tag and push Docs image to registry
+      - name: Test the documentation container
         run: |
-          REG="10.0.40.193:5000"
-          IMAGE_TAG="devops-docs-team9:${{ github.sha }}"
-          REG_IMAGE="$REG/devops-docs-team9:${{ github.sha }}"
-          docker tag "$IMAGE_TAG" "$REG_IMAGE"
-          docker push "$REG_IMAGE"
+          docker run --name docintegrationtest --network host --rm -v "${PWD}/integrationtest.sh:/integrationtest.sh:ro" ellerbrock/alpine-bash-curl-ssl bash /integrationtest.sh
 
-          docker tag devops-docs-team9 "$REG/devops-docs-team9:latest"
-          docker push "$REG/devops-docs-team9:latest"
-
-      # --- Cleanup ---
-      - name: Cleanup dangling images
+      - name: Clean the documentation container in any case
         if: always()
-        run: docker image prune -f
+        run: |
+          docker container stop docintegrationtest || true
+          docker container rm docintegrationtest || true
+          docker container stop mydoc || true
+          docker container rm mydoc || true
