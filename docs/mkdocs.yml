@@ -1,11 +1,12 @@
 site_name: DevOps Lectures
+docs_dir: content
 theme:
   name: material
   language: en
 nav:
-  - Home: content/index.md
-  - Lecture 1: content/01_LECTURE.md
-  - Lecture 2: content/02_LECTURE.md
-  - Lecture 3: content/03_LECTURE.md
-  - Lecture 4: content/04_LECTURE.md
-  - Lecture 5: content/05_LECTURE.md
+  - Home: index.md
+  - Lecture 1: 01_LECTURE.md
+  - Lecture 2: 02_LECTURE.md
+  - Lecture 3: 03_LECTURE.md
+  - Lecture 4: 04_LECTURE.md
+  - Lecture 5: 05_LECTURE.md
