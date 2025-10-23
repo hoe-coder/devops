@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-URL="http://localhost:8082"
+URL="http://localhost:8081"
 
 # Warte bis Doku-Service 200 zurückgibt
 for i in {1..30}; do
