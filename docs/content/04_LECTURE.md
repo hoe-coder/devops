@@ -1,4 +1,4 @@
-## Lecture 4 – Deployment & Integration Tests
+# Lecture 4 – Deployment & Integration Tests
 
 ### Goals
 - Automatically deploy application to VM using GitHub Actions
@@ -13,7 +13,7 @@
 4. **Push:** Upload image to team registry at `10.0.40.193:5000`
 
 ### Integration Test
-Script waits up to 60 seconds for container to respond with HTTP 200, then validates response content matches expected output.
+Script waits up to 30 seconds for container to respond with HTTP 200, then validates response content matches expected output.
 
 ### Registry
 Images stored with two tags:

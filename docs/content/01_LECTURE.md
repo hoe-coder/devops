@@ -1,6 +1,6 @@
-# Lecture 1 at 5th Semptember 2025
+# Lecture 1 - Introduction
 
-## TODOS:
+### ToDos:
 
 The lecturer presented the topic/project, and then we created some of the prerequisites for the DEVOPS Project.
 
@@ -9,5 +9,8 @@ The lecturer presented the topic/project, and then we created some of the prereq
 3. Add private/public key for the project, so the CI/CD pipeline will work
 4. Add project to GitHub
 
+---
+
+## Results
 The first lecture was quite easy, and we completed it at a fast pace, so we could leave earlier home.
 

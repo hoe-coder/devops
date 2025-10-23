@@ -1,4 +1,4 @@
-## Lecture 3 – Build & Dockerize
+# Lecture 3 – Build & Dockerize
 
 ### Goals
 - Build the Spring Boot application with Gradle
