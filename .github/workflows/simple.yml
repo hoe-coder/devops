@@ -9,6 +9,11 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Fix permissions before checkout
+        run: |
+          echo "Fixing leftover root-owned files..."
+          docker run --rm -v "${PWD}":/project bash:latest bash -c "chown -R $(id -u):$(id -g) /project || true"
+
       # --- Checkout & Setup ---
       - name: Checkout Code
         uses: actions/checkout@v4
