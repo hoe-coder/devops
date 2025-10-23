@@ -102,16 +102,6 @@ jobs:
           docker build -f Dockerfile.nginx -t my-documentation .
           docker image ls --all
 
-      - name: Stop and remove old documentation containers
-        run: |
-          # Finde Container auf Port 8081 und stoppe sie
-          echo "=== Finding containers on port 8081 ==="
-          docker ps --filter "publish=8081" --format "{{.Names}} ({{.ID}})"
-          
-          # Stoppe alle Container auf Port 8081
-          docker ps --filter "publish=8081" --format "{{.ID}}" | xargs -r docker stop || true
-          docker ps -a --filter "publish=8081" --format "{{.ID}}" | xargs -r docker rm || true
-
       - name: Run the documentation container
         run: |
           docker container stop mydoc || true
