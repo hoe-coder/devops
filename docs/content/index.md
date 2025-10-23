@@ -13,3 +13,4 @@ and continuous documentation generation using **MkDocs Material**.
 ###  Components
 - Spring Boot App (JRE Image)
 - Documentation Site (Nginx Image)
+- test
