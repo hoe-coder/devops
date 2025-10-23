@@ -27,6 +27,4 @@
    docker build -t devops-app-team9:latest .
    docker run -p 8080:8080 devops-app-team9:latest
    ```
-   Application accessible at `http://localhost:8080` (initially Whitelabel Error Page).
-
 ---
