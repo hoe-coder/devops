@@ -1,6 +1,6 @@
 # Lecture 6 – Documentation with MkDocs
 
-### Goals
+#### Goals
 - Generate technical documentation automatically
 - Deploy documentation as containerized web service
 - Integrate documentation build into CI/CD pipeline
